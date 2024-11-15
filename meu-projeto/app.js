@@ -144,6 +144,39 @@ app.delete('/delete-usuario/:id', (req, res) => {
     }
   });
 });
+// Rota para listar peças
+app.get('/listar-pecas', (req, res) => {
+  res.sendFile(path.join(__dirname, 'listarPecas.html')); // Página de listagem de peças
+});
+// Rota para buscar todas as peças
+app.get('/pecas', (req, res) => {
+  const query = 'SELECT cod, descricao, massa, tempo_usinagem FROM pecas';
+  connection.query(query, (err, results) => {
+    if (err) {
+      console.error('Erro ao buscar peças:', err);
+      return res.status(500).json({ error: 'Erro no servidor.' });
+    }
+    res.json(results); // Retorna as peças em formato JSON
+  });
+});
+
+// Rota para excluir peça pelo código
+app.delete('/delete-peca/:cod', (req, res) => {
+  const cod = req.params.cod;
+  const query = 'DELETE FROM pecas WHERE cod = ?';
+  connection.execute(query, [cod], (err, result) => {
+    if (err) {
+      console.error('Erro ao excluir peça:', err);
+      return res.status(500).json({ success: false, error: 'Erro no servidor.' });
+    }
+    if (result.affectedRows > 0) {
+      res.json({ success: true });
+    } else {
+      res.status(404).json({ success: false, message: 'Peça não encontrada.' });
+    }
+  });
+});
+
 
 // Inicia o servidor na porta 3000
 app.listen(3000, () => {
