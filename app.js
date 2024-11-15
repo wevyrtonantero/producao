@@ -177,6 +177,24 @@ app.delete('/delete-peca/:cod', (req, res) => {
   });
 });
 
+// Rota para a página de produção
+app.get('/producao.html', (req, res) => {
+  res.sendFile(path.join(__dirname, 'producao.html'));  // Ou o caminho onde o arquivo .html está localizado
+});
+
+// Rota para buscar todas as peças
+app.get('/producao', (req, res) => {
+  const query = 'SELECT cod, descricao, massa, tempo_usinagem FROM pecas';
+  connection.query(query, (err, results) => {
+    if (err) {
+      console.error('Erro ao buscar peças:', err);
+      return res.status(500).json({ error: 'Erro no servidor.' });
+    }
+    res.json(results); // Retorna as peças em formato JSON
+  });
+});
+
+
 
 // Inicia o servidor na porta 3000
 app.listen(3000, () => {
