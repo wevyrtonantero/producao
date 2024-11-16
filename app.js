@@ -5,6 +5,7 @@ const app = express();
 const path = require('path');
 
 // Middleware para processar os dados do formulário
+app.use('/preset', express.static(path.join(__dirname, 'preset')));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.json()); // Para lidar com JSON nas requisições
 
