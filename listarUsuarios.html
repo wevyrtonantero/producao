@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Listar Usuários</title>
+  <style>
+    /* Estilo geral do corpo */
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #e6f0ff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      height: 100vh;
+      margin: 0;
+    }
+
+    /* Container principal */
+    .container {
+      background-color: #ffffff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      width: 80%;
+      max-width: 700px;
+    }
+
+    /* Título estilizado */
+    .title {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #00509e;
+    }
+
+    .title h2 {
+      font-size: 24px;
+      margin: 0;
+      padding: 10px;
+      background-color: #00509e;
+      color: #ffffff;
+      border-radius: 8px;
+    }
+
+    /* Tabela de usuários */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th, td {
+      padding: 12px;
+      text-align: left;
+      border-bottom: 1px solid #ddd;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+
+    th {
+      background-color: #0073e6;
+      color: white;
+    }
+
+    /* Botões de ação */
+    .delete-button {
+      background-color: #ff4d4d;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      padding: 8px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    .delete-button:hover {
+      background-color: #e60000;
+    }
+
+    /* Efeito de hover nas linhas da tabela */
+    tr:hover {
+      background-color: #f1f9ff;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="title">
+      <h2>Lista de Usuários</h2>
+    </div>
+
+    <!-- Tabela de listagem de usuários -->
+    <table>
+      <thead>
+        <tr>
+          <th>Nome</th>
+          <th>Email</th>
+          <th>Ação</th>
+        </tr>
+      </thead>
+      <tbody id="user-list">
+        <!-- Linhas de usuários serão preenchidas dinamicamente -->
+      </tbody>
+    </table>
+    <button class="back-button" onclick="window.location.href='/principal'">Voltar para a Página Principal</button>
+  </div>
+
+  <script>
+    // Função para carregar a lista de usuários
+    async function loadUsers() {
+      const response = await fetch('/usuarios');
+      const users = await response.json();
+      const userList = document.getElementById('user-list');
+      userList.innerHTML = '';
+
+      users.forEach(user => {
+        const row = document.createElement('tr');
+        
+        const nameCell = document.createElement('td');
+        nameCell.textContent = user.nome;
+        row.appendChild(nameCell);
+        
+        const emailCell = document.createElement('td');
+        emailCell.textContent = user.email;
+        row.appendChild(emailCell);
+
+        const actionCell = document.createElement('td');
+        const deleteButton = document.createElement('button');
+        deleteButton.className = 'delete-button';
+        deleteButton.textContent = 'Excluir';
+        deleteButton.onclick = () => deleteUser(user.id);
+        actionCell.appendChild(deleteButton);
+        row.appendChild(actionCell);
+
+        userList.appendChild(row);
+      });
+    }
+
+    // Função para excluir um usuário
+    async function deleteUser(userId) {
+      if (confirm('Tem certeza de que deseja excluir este usuário?')) {
+        const response = await fetch(`/delete-usuario/${userId}`, { method: 'DELETE' });
+        const result = await response.json();
+        if (result.success) {
+          alert('Usuário excluído com sucesso!');
+          loadUsers();  // Recarrega a lista de usuários após a exclusão
+        } else {
+          alert('Erro ao excluir usuário.');
+        }
+      }
+    }
+
+    // Carregar a lista de usuários quando a página é carregada
+    document.addEventListener('DOMContentLoaded', loadUsers);
+  </script>
+</body>
+</html>

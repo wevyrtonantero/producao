@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cadastrar Usuário</title>
+  <style>
+    /* Resetando as margens e paddings de todos os elementos */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f0f8ff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      flex-direction: column;
+    }
+
+    .container {
+      background-color: #ffffff;
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      max-width: 350px; /* Limita a largura para não ultrapassar */
+      text-align: center;
+    }
+
+    .container h2 {
+      color: #2e8b57;
+      font-size: 24px;
+      margin-bottom: 20px;
+    }
+
+    input, button {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 4px;
+      font-size: 16px;
+    }
+
+    input {
+      border: 1px solid #ccc;
+    }
+
+    button[type="submit"],
+    .button {
+      background-color: #1e90ff;
+      border: none;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background-color 0.3s ease, transform 0.2s;
+    }
+
+    button[type="submit"]:hover,
+    .button:hover {
+      background-color: #4682b4;
+      transform: scale(1.03);
+    }
+
+    .password-container {
+      position: relative;
+    }
+
+    .password-container input {
+      padding-right: 40px; /* Ajuste para espaço maior para o ícone */
+    }
+
+    .eye-icon {
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      cursor: pointer;
+      color: #007bff;
+    }
+
+    /* Estilos para o botão de voltar */
+    .back-button {
+      background: none;
+      border: none;
+      color: #007bff;
+      font-size: 14px;
+      cursor: pointer;
+      margin-top: 15px;
+      text-decoration: underline;
+      transition: color 0.3s ease;
+    }
+
+    .back-button:hover {
+      color: #0056b3;
+    }
+
+    /* Menu de opções */
+    .menu-container {
+      margin-top: 30px;
+      display: flex;
+      flex-direction: column;
+      gap: 15px; /* Espaçamento entre os itens do menu */
+      align-items: center;
+    }
+
+    .menu-container .button {
+      width: 220px;
+      padding: 12px;
+      background-color: #4caf50;
+      border-radius: 8px;
+      color: white;
+      font-weight: bold;
+      font-size: 18px;
+      text-align: center;
+      text-decoration: none;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      transition: all 0.3s ease;
+    }
+
+    .menu-container .button:hover {
+      background-color: #45a049;
+      transform: translateY(-3px);
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+    }
+
+    .menu-container .button:active {
+      background-color: #389c42;
+      transform: translateY(1px);
+    }
+
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Cadastrar Novo Usuário</h2>
+    <form action="/salvar-usuario" method="POST">
+      <input type="text" name="nome" placeholder="Nome" required>
+      <input type="email" name="email" placeholder="E-mail" required>
+      
+      <!-- Campo de senha com ícone de olho -->
+      <div class="password-container">
+        <input type="password" id="senha" name="senha" placeholder="Senha" required>
+        <span class="eye-icon" onclick="togglePassword()">👁️</span>
+      </div>
+      
+      <button type="submit">Salvar Usuário</button>
+    </form>
+
+    <!-- Botão Voltar para a Página Principal -->
+    <button class="back-button" onclick="window.location.href='/principal'">Voltar para a Página Principal</button>
+  </div>
+
+  <!-- Menu de opções para Listar Usuários -->
+  <div class="menu-container">
+    <a href="/listar-usuarios" class="button">Listar Usuários</a>
+  </div>
+
+  <script>
+    function togglePassword() {
+      var senhaInput = document.getElementById('senha');
+      var eyeIcon = document.querySelector('.eye-icon');
+      if (senhaInput.type === "password") {
+        senhaInput.type = "text";
+        eyeIcon.textContent = "👁️‍🗨️"; // Ícone de olho fechado
+      } else {
+        senhaInput.type = "password";
+        eyeIcon.textContent = "👁️"; // Ícone de olho aberto
+      }
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f0f8ff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .login-container {
+      background-color: #ffffff;
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      width: 300px;
+    }
+    .login-container h2 {
+      text-align: center;
+      color: #2e8b57;
+    }
+    input {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+    button {
+      width: 100%;
+      padding: 10px;
+      background-color: #1e90ff;
+      border: none;
+      border-radius: 4px;
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #4682b4;
+    }
+    .error {
+      color: red;
+      text-align: center;
+    }
+    .password-container {
+      position: relative;
+    }
+    .eye-icon {
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      cursor: pointer;
+      font-size: 18px;
+    }
+  </style>
+</head>
+<body>
+  <div class="login-container">
+    <h2>Login</h2>
+    <form action="/login" method="POST">
+      <input type="email" name="email" placeholder="E-mail" required>
+      
+      <div class="password-container">
+        <input type="password" id="senha" name="senha" placeholder="Senha" required>
+        <span class="eye-icon" id="toggle-password" onclick="togglePassword()">👁️</span>
+      </div>
+
+      <button type="submit">Acessar</button>
+    </form>
+    <div class="error" id="error-message"></div>
+  </div>
+
+  <script>
+    // Função para alternar a visibilidade da senha
+    function togglePassword() {
+      const passwordField = document.getElementById('senha');
+      const icon = document.getElementById('toggle-password');
+      
+      if (passwordField.type === 'password') {
+        passwordField.type = 'text'; // Torna a senha visível
+        icon.textContent = '👁️‍🗨️'; // Ícone de olho fechado
+      } else {
+        passwordField.type = 'password'; // Torna a senha oculta
+        icon.textContent = '👁️'; // Ícone de olho aberto
+      }
+    }
+  </script>
+</body>
+</html>

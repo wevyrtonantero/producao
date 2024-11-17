@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Listar Peças</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f0f8ff;
+      padding: 20px;
+    }
+
+    h2 {
+      color: #2e8b57;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+
+    table, th, td {
+      border: 1px solid #ddd;
+    }
+
+    th, td {
+      padding: 10px;
+      text-align: center;
+    }
+
+    th {
+      background-color: #efb5f5;
+    }
+
+    button {
+      padding: 8px 16px;
+      border: none;
+      color: white;
+      cursor: pointer;
+      border-radius: 4px;
+    }
+
+    .preset-btn {
+      background-color: #ff7f50; /* Laranja */
+    }
+
+    .produzir-btn {
+      background-color: #28a745; /* Verde */
+    }
+
+    .preset-btn:hover {
+      background-color: #e67e22;
+    }
+
+    .produzir-btn:hover {
+      background-color: #218838;
+    }
+
+    .action-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    /* Estilo para efeito hover nas linhas da tabela */
+    tbody tr:hover {
+      background-color: #f1f1f1;
+      cursor: pointer;
+    }
+
+  </style>
+</head>
+<body>
+  <h2>Listagem de Peças</h2>
+
+  <!-- Filtro de busca -->
+  <input type="text" id="filterInput" placeholder="Pesquisar por código ou descrição" onkeyup="filterTable()">
+
+  <table id="pecasTable">
+    <thead>
+      <tr>
+        <th>Código</th>
+        <th>Descrição</th>
+        <th>Massa</th>
+        <th>Tempo de Usinagem</th>
+        <th>Ações</th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- As peças serão inseridas aqui via JavaScript -->
+    </tbody>
+  </table>
+
+  <script>
+    // Função para carregar os dados das peças
+    function loadPecas() {
+      fetch('/pecas')
+        .then(response => response.json())
+        .then(data => {
+          const tableBody = document.querySelector("#pecasTable tbody");
+          tableBody.innerHTML = ""; // Limpa a tabela antes de inserir os dados
+
+          data.forEach(peca => {
+            const row = document.createElement("tr");
+
+            row.innerHTML = `
+              <td>${peca.cod}</td>
+              <td>${peca.descricao}</td>
+              <td>${peca.massa}</td>
+              <td>${peca.tempo_usinagem}</td>
+              <td class="action-buttons">
+                <button class="preset-btn" onclick="actionPreset('${peca.cod}')">Preset</button>
+                <button class="produzir-btn" onclick="actionProduzir('${peca.cod}')">Produzir</button>
+              </td>
+            `;
+            tableBody.appendChild(row);
+          });
+        })
+        .catch(error => {
+          console.error('Erro ao carregar peças:', error);
+        });
+    }
+
+    // Função para filtrar as peças
+    function filterTable() {
+      const filterValue = document.getElementById('filterInput').value.toLowerCase();
+      const rows = document.querySelectorAll("#pecasTable tbody tr");
+
+      rows.forEach(row => {
+        const cod = row.cells[0].textContent.toLowerCase();
+        const descricao = row.cells[1].textContent.toLowerCase();
+        if (cod.includes(filterValue) || descricao.includes(filterValue)) {
+          row.style.display = "";
+        } else {
+          row.style.display = "none";
+        }
+      });
+    }
+
+    // Função para substituir caracteres não permitidos no nome do arquivo
+    function sanitizeFileName(cod) {
+      return cod.replace(/[\/:*?"<>|]/g, "_") + ".pdf";
+    }
+
+    // Função para simular ação de "Presset"
+    function actionPreset(cod) {
+      // Substitui caracteres não permitidos por "_"
+      const fileName = sanitizeFileName(cod);
+      
+      // Caminho do arquivo PDF no servidor
+      const filePath = `/preset/${fileName}`;
+      
+      // Tenta abrir o arquivo PDF no navegador
+      window.open(filePath, '_blank');
+      
+      // Mensagem de confirmação
+      //alert(`O arquivo Presset para a peça ${cod} foi aberto.`);
+    }
+
+    // Função para simular ação de "Produzir"
+    function actionProduzir(cod) {
+      alert(`A produção da peça ${cod} foi iniciada.`);
+    }
+
+    // Carregar as peças quando a página for carregada
+    window.onload = loadPecas;
+  </script>
+</body>
+</html>

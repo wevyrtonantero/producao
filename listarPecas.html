@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Listar Peças</title>
+  <style>
+    /* Estilo geral do corpo */
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #e6f0ff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin: 0;
+      padding: 20px;
+    }
+
+    /* Container principal */
+    .container {
+      background-color: #ffffff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      width: 80%;
+      max-width: 700px;
+    }
+
+    /* Título estilizado */
+    .title {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #00509e;
+    }
+
+    /* Estilo da tabela */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+      font-family: Arial, sans-serif;
+      color: black; /* Fonte preta na tabela */
+    }
+
+    th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: center;
+    }
+
+    th {
+      background-color: #00509e;
+      color: white;
+    }
+
+    /* Efeito ao passar o mouse sobre a linha da tabela */
+    table tbody tr:hover {
+      background-color: #f2f2f2;
+      cursor: pointer;
+    }
+
+    /* Botão verde para listar peças */
+    .listar-button {
+      margin: 20px 0;
+      padding: 10px 20px;
+      background-color: #28a745;
+      color: white;
+      font-size: 16px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      text-align: center;
+      transition: background-color 0.3s, transform 0.2s;
+    }
+
+    .listar-button:hover {
+      background-color: #218838;
+      transform: scale(1.05);
+    }
+
+    /* Botão para voltar, discreto e ao canto */
+    .back-button {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      padding: 8px 15px;
+      background-color: #6c757d;
+      color: white;
+      font-size: 14px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      text-align: center;
+      transition: background-color 0.3s, transform 0.2s;
+    }
+
+    .back-button:hover {
+      background-color: #5a6268;
+      transform: scale(1.05);
+    }
+
+    /* Estilo para tornar a tabela responsiva */
+    .table-wrapper {
+      width: 100%;
+      overflow-x: auto;
+      margin-top: 20px;
+    }
+
+    /* Estilo para o campo de pesquisa */
+    .search-input {
+      padding: 8px;
+      margin: 10px 0;
+      width: 100%;
+      max-width: 300px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <div class="title">
+      <h2>Lista de Peças</h2>
+    </div>
+
+    <!-- Campo de busca -->
+    <input type="text" id="search" class="search-input" placeholder="Pesquisar por código ou descrição" oninput="searchPecas()" />
+
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>Código</th>
+            <th>Descrição</th>
+            <th>Massa</th>
+            <th>Tempo de Usinagem</th>
+            <th>Ações</th> <!-- Nova coluna para os botões -->
+          </tr>
+        </thead>
+        <tbody id="peca-list">
+          <!-- Linhas de peças serão preenchidas dinamicamente -->
+        </tbody>
+      </table>
+    </div>
+    <button onclick="window.location.href='/principal'" class="back-button">Voltar à Página Principal</button>
+  </div>
+
+  <script>
+    let pecas = [];
+
+    async function loadPecas() {
+      try {
+        const response = await fetch('/pecas');
+        pecas = await response.json();
+
+        renderPecas(pecas);
+      } catch (error) {
+        console.error('Erro ao carregar peças:', error);
+      }
+    }
+
+    function renderPecas(pecas) {
+      const pecaList = document.getElementById('peca-list');
+      pecaList.innerHTML = '';
+
+      pecas.forEach(peca => {
+        const row = document.createElement('tr');
+
+        const codCell = document.createElement('td');
+        codCell.textContent = peca.cod;
+        row.appendChild(codCell);
+
+        const descricaoCell = document.createElement('td');
+        descricaoCell.textContent = peca.descricao;
+        row.appendChild(descricaoCell);
+
+        const massaCell = document.createElement('td');
+        massaCell.textContent = peca.massa;
+        row.appendChild(massaCell);
+
+        const tempoCell = document.createElement('td');
+        tempoCell.textContent = peca.tempo_usinagem;
+        row.appendChild(tempoCell);
+
+        // Botão de exclusão
+        const deleteCell = document.createElement('td');
+        const deleteButton = document.createElement('button');
+        deleteButton.textContent = 'Excluir';
+        deleteButton.style.backgroundColor = '#ff4d4d';
+        deleteButton.style.color = '#fff';
+        deleteButton.style.border = 'none';
+        deleteButton.style.borderRadius = '5px';
+        deleteButton.style.padding = '5px 10px';
+        deleteButton.style.cursor = 'pointer';
+
+        deleteButton.addEventListener('click', () => deletePeca(peca.cod));
+        deleteCell.appendChild(deleteButton);
+        row.appendChild(deleteCell);
+
+        pecaList.appendChild(row);
+      });
+    }
+
+    async function deletePeca(cod) {
+      const confirmDelete = confirm('Tem certeza que deseja excluir esta peça?');
+      if (!confirmDelete) return;
+
+      try {
+        const response = await fetch(`/delete-peca/${cod}`, { method: 'DELETE' });
+        const result = await response.json();
+
+        if (result.success) {
+          alert('Peça excluída com sucesso!');
+          loadPecas(); // Recarrega a tabela após excluir
+        } else {
+          alert(result.message || 'Erro ao excluir peça.');
+        }
+      } catch (error) {
+        console.error('Erro ao excluir peça:', error);
+        alert('Erro no servidor ao tentar excluir a peça.');
+      }
+    }
+
+    function searchPecas() {
+      const query = document.getElementById('search').value.toLowerCase();
+      const filteredPecas = pecas.filter(peca => 
+        peca.cod.toLowerCase().includes(query) || peca.descricao.toLowerCase().includes(query)
+      );
+
+      renderPecas(filteredPecas);
+    }
+
+    // Carrega as peças ao carregar a página
+    document.addEventListener('DOMContentLoaded', loadPecas);
+  </script>
+</body>
+</html>
