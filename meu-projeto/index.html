@@ -49,6 +49,17 @@
       color: red;
       text-align: center;
     }
+    .password-container {
+      position: relative;
+    }
+    .eye-icon {
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      cursor: pointer;
+      font-size: 18px;
+    }
   </style>
 </head>
 <body>
@@ -56,10 +67,31 @@
     <h2>Login</h2>
     <form action="/login" method="POST">
       <input type="email" name="email" placeholder="E-mail" required>
-      <input type="password" name="senha" placeholder="Senha" required>
+      
+      <div class="password-container">
+        <input type="password" id="senha" name="senha" placeholder="Senha" required>
+        <span class="eye-icon" id="toggle-password" onclick="togglePassword()">👁️</span>
+      </div>
+
       <button type="submit">Acessar</button>
     </form>
     <div class="error" id="error-message"></div>
   </div>
+
+  <script>
+    // Função para alternar a visibilidade da senha
+    function togglePassword() {
+      const passwordField = document.getElementById('senha');
+      const icon = document.getElementById('toggle-password');
+      
+      if (passwordField.type === 'password') {
+        passwordField.type = 'text'; // Torna a senha visível
+        icon.textContent = '👁️‍🗨️'; // Ícone de olho fechado
+      } else {
+        passwordField.type = 'password'; // Torna a senha oculta
+        icon.textContent = '👁️'; // Ícone de olho aberto
+      }
+    }
+  </script>
 </body>
 </html>

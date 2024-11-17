@@ -105,6 +105,16 @@
       overflow-x: auto;
       margin-top: 20px;
     }
+
+    /* Estilo para o campo de pesquisa */
+    .search-input {
+      padding: 8px;
+      margin: 10px 0;
+      width: 100%;
+      max-width: 300px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+    }
   </style>
 </head>
 <body>
@@ -113,6 +123,10 @@
     <div class="title">
       <h2>Lista de Peças</h2>
     </div>
+
+    <!-- Campo de busca -->
+    <input type="text" id="search" class="search-input" placeholder="Pesquisar por código ou descrição" oninput="searchPecas()" />
+
     <div class="table-wrapper">
       <table>
         <thead>
@@ -133,53 +147,59 @@
   </div>
 
   <script>
+    let pecas = [];
+
     async function loadPecas() {
       try {
         const response = await fetch('/pecas');
-        const pecas = await response.json();
+        pecas = await response.json();
 
-        const pecaList = document.getElementById('peca-list');
-        pecaList.innerHTML = '';
-
-        pecas.forEach(peca => {
-          const row = document.createElement('tr');
-
-          const codCell = document.createElement('td');
-          codCell.textContent = peca.cod;
-          row.appendChild(codCell);
-
-          const descricaoCell = document.createElement('td');
-          descricaoCell.textContent = peca.descricao;
-          row.appendChild(descricaoCell);
-
-          const massaCell = document.createElement('td');
-          massaCell.textContent = peca.massa;
-          row.appendChild(massaCell);
-
-          const tempoCell = document.createElement('td');
-          tempoCell.textContent = peca.tempo_usinagem;
-          row.appendChild(tempoCell);
-
-          // Botão de exclusão
-          const deleteCell = document.createElement('td');
-          const deleteButton = document.createElement('button');
-          deleteButton.textContent = 'Excluir';
-          deleteButton.style.backgroundColor = '#ff4d4d';
-          deleteButton.style.color = '#fff';
-          deleteButton.style.border = 'none';
-          deleteButton.style.borderRadius = '5px';
-          deleteButton.style.padding = '5px 10px';
-          deleteButton.style.cursor = 'pointer';
-
-          deleteButton.addEventListener('click', () => deletePeca(peca.cod));
-          deleteCell.appendChild(deleteButton);
-          row.appendChild(deleteCell);
-
-          pecaList.appendChild(row);
-        });
+        renderPecas(pecas);
       } catch (error) {
         console.error('Erro ao carregar peças:', error);
       }
+    }
+
+    function renderPecas(pecas) {
+      const pecaList = document.getElementById('peca-list');
+      pecaList.innerHTML = '';
+
+      pecas.forEach(peca => {
+        const row = document.createElement('tr');
+
+        const codCell = document.createElement('td');
+        codCell.textContent = peca.cod;
+        row.appendChild(codCell);
+
+        const descricaoCell = document.createElement('td');
+        descricaoCell.textContent = peca.descricao;
+        row.appendChild(descricaoCell);
+
+        const massaCell = document.createElement('td');
+        massaCell.textContent = peca.massa;
+        row.appendChild(massaCell);
+
+        const tempoCell = document.createElement('td');
+        tempoCell.textContent = peca.tempo_usinagem;
+        row.appendChild(tempoCell);
+
+        // Botão de exclusão
+        const deleteCell = document.createElement('td');
+        const deleteButton = document.createElement('button');
+        deleteButton.textContent = 'Excluir';
+        deleteButton.style.backgroundColor = '#ff4d4d';
+        deleteButton.style.color = '#fff';
+        deleteButton.style.border = 'none';
+        deleteButton.style.borderRadius = '5px';
+        deleteButton.style.padding = '5px 10px';
+        deleteButton.style.cursor = 'pointer';
+
+        deleteButton.addEventListener('click', () => deletePeca(peca.cod));
+        deleteCell.appendChild(deleteButton);
+        row.appendChild(deleteCell);
+
+        pecaList.appendChild(row);
+      });
     }
 
     async function deletePeca(cod) {
@@ -200,6 +220,15 @@
         console.error('Erro ao excluir peça:', error);
         alert('Erro no servidor ao tentar excluir a peça.');
       }
+    }
+
+    function searchPecas() {
+      const query = document.getElementById('search').value.toLowerCase();
+      const filteredPecas = pecas.filter(peca => 
+        peca.cod.toLowerCase().includes(query) || peca.descricao.toLowerCase().includes(query)
+      );
+
+      renderPecas(filteredPecas);
     }
 
     // Carrega as peças ao carregar a página

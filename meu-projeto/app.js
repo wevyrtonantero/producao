@@ -5,6 +5,7 @@ const app = express();
 const path = require('path');
 
 // Middleware para processar os dados do formulário
+app.use('/preset', express.static(path.join(__dirname, 'preset')));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.json()); // Para lidar com JSON nas requisições
 
@@ -177,31 +178,23 @@ app.delete('/delete-peca/:cod', (req, res) => {
   });
 });
 
-// Rota para a pagina setup
-app.get('/setup', (req, res) => {
-  res.sendFile(path.join(__dirname, 'setup.html')); // Página de listagem de peças
+// Rota para a página de produção
+app.get('/producao.html', (req, res) => {
+  res.sendFile(path.join(__dirname, 'producao.html'));  // Ou o caminho onde o arquivo .html está localizado
 });
-// Rota para servir os arquivos PDF
-app.get('/preset/:fileName', (req, res) => {
-  const fileName = req.params.fileName;
-  
-  // Caminho absoluto para a pasta 'preset'
-  const filePath = path.join('C:', 'Users', 'unipl', 'OneDrive', 'Documentos', 'Controle de produção', 'meu-projeto', 'preset', fileName);
-  
-  // Verifica se o arquivo existe e envia para o cliente
-  res.sendFile(filePath, (err) => {
+
+// Rota para buscar todas as peças
+app.get('/producao', (req, res) => {
+  const query = 'SELECT cod, descricao, massa, tempo_usinagem FROM pecas';
+  connection.query(query, (err, results) => {
     if (err) {
-      console.error('Erro ao enviar o arquivo:', err);
-      res.status(404).send('Arquivo não encontrado');
+      console.error('Erro ao buscar peças:', err);
+      return res.status(500).json({ error: 'Erro no servidor.' });
     }
+    res.json(results); // Retorna as peças em formato JSON
   });
 });
 
-
-// Rota para a pagina iniciar produção
-app.get('/produzir', (req, res) => {
-  res.sendFile(path.join(__dirname, 'produzir.html')); // Página de listagem de peças
-});
 
 
 // Inicia o servidor na porta 3000
